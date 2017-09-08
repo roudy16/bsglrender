@@ -24,8 +24,8 @@ GLFWwindow* createWindow(uint32_t width, uint32_t height) {
         width,                            // width, in pixels
         height,                           // height, in pixels
         "A GLFW window",                  // window title
-        NULL,
-        NULL
+        nullptr,
+        nullptr
     );
 
     if (window == nullptr) {

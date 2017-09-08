@@ -11,5 +11,6 @@
 /.vs
 /shaders
 /bin
+/build
 CMakeCache.txt
 cmake_install.cmake
