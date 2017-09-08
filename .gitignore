@@ -1,0 +1,15 @@
+*~
+*.swp
+*.swo
+
+*.vcxproj
+*.vcxproj.filters
+*.dir
+*.sln
+/CMakeFiles
+/x64
+/.vs
+/shaders
+/bin
+CMakeCache.txt
+cmake_install.cmake
