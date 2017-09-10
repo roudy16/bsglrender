@@ -2,6 +2,8 @@
 
 #include <cmath>
 
+namespace bsgl {
+
 struct Color {
     float r, g, b, a;
 };
@@ -20,16 +22,4 @@ constexpr uint32_t ColorConvert4fU32(Color c) {
         | a << 24;
 }
 
-//#include "SDL.h"
-//void ColorSurface(SDL_Surface* surface, Color color, float t) {
-//    constexpr Color blue = { 0.0f, 0.0f, 1.0f, 1.0f };
-//    constexpr Color red = { 1.0f, 0.0f, 0.0f, 1.0f };
-//
-//    auto colorTransform = [t](Color c) {
-//        const float tt = (std::sinf(t * 2.0f * static_cast<float>(M_PI)) + 1.0f) / 2.0f;
-//        return c * tt;
-//    };
-//
-//    Uint32 ct = ColorConvert4fU32(colorTransform(color));
-//    SDL_FillRect(surface, nullptr, ct);
-//}
+}

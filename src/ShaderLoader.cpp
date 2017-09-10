@@ -20,10 +20,10 @@ public:
 
 static ShaderManager g_shader_mgr;
 
-void OP::LoadDefaultShaderProgs() {
+void bsgl::LoadDefaultShaderProgs() {
     // Load and compile shaders
-    GLuint basic_vert = OP::LoadVertexShader(".\\shaders\\basic_min.vert");
-    GLuint basic_frag = OP::LoadFragmentShader(".\\shaders\\basic_min.frag");
+    GLuint basic_vert = bsgl::LoadVertexShader(".\\shaders\\basic_min.vert");
+    GLuint basic_frag = bsgl::LoadFragmentShader(".\\shaders\\basic_min.frag");
 
     // Link Shader program. TODO make this its own function
     GLuint prog = glCreateProgram();
@@ -79,17 +79,17 @@ GLuint LoadShader(const std::string& filename, GLenum type) {
     return shdr_hndl;
 }
 
-GLuint OP::LoadFragmentShader(const std::string& filepath) {
+GLuint bsgl::LoadFragmentShader(const std::string& filepath) {
     GLuint hndl = LoadShader(filepath, GL_FRAGMENT_SHADER);
     return hndl;
 }
 
-GLuint OP::LoadVertexShader(const std::string& filepath) {
+GLuint bsgl::LoadVertexShader(const std::string& filepath) {
     GLuint hndl = LoadShader(filepath, GL_VERTEX_SHADER);
     return hndl;
 }
 
-GLuint OP::GetShaderProgHandle(const std::string& name) {
+GLuint bsgl::GetShaderProgHandle(const std::string& name) {
     auto&& prog_map = g_shader_mgr.shader_progs;
     auto iter = prog_map.find(name);
     if (iter == prog_map.end()) {

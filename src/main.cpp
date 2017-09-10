@@ -4,7 +4,6 @@
 #include <cstdio>
 
 #include <GL/glew.h>
-#define GLFW_INCLUDE_ES2
 #include "GLFW/glfw3.h"
 
 #include "ShaderLoader.h"
@@ -13,6 +12,7 @@
 #include "utils.h"
 
 using namespace std;
+using namespace bsgl;
 
 #define  LOG(...)   printf(__VA_ARGS__);printf("\n");
 
@@ -40,8 +40,8 @@ void error_callback(int error, const char* description)
 }
 
 void setOpenGLAttributes() {
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 }
 
 void init() {
@@ -52,13 +52,11 @@ void init() {
     glfwSetErrorCallback(error_callback);
 }
 
-void initVertexBufferObjects(vertex_t* vertex_buffer, GLushort* indices, GLuint num_vertices, GLuint num_indices, GLuint* vbod_ids) {
+void initVertexBufferObjects(GLuint* vbod_ids) {
     // Create a Vertex Buffer Object and copy the vertex data to it
     glGenBuffers(NUM_VBOS, vbod_ids);
     glBindBuffer(GL_ARRAY_BUFFER, vbod_ids[VERTEXATTR_BUFFER_IDX]);
-    glBufferData(GL_ARRAY_BUFFER, num_vertices * (VERT_POS_SIZE + VERT_COLOR_SIZE) * sizeof(vertex_t), vertex_buffer, GL_STATIC_DRAW);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbod_ids[INDEX_BUFFER_IDX]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_indices * sizeof(GLushort), indices, GL_STATIC_DRAW);
 }
 
 int main(int argc, char* argv[]) {
@@ -82,21 +80,22 @@ int main(int argc, char* argv[]) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         // Create Vertex Array Object
-        //GLuint vao;
-        //glGenVertexArraysOES(1, &vao);
-        //glBindVertexArrayOES(vao);
-
+        GLuint vao;
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
         GLuint vbos[NUM_VBOS];
+        initVertexBufferObjects(vbos);
 
         static vertex_t vertices[TRI_VALS] = {
                  0.0f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
                 -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
                  0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f };
         static GLushort indices[NUM_VERTICES] = { 0, 1, 2 };
-        initVertexBufferObjects(vertices, indices, NUM_VERTICES, NUM_VERTICES, vbos);
+        glBufferData(GL_ARRAY_BUFFER, NUM_VERTICES * (VERT_POS_SIZE + VERT_COLOR_SIZE) * sizeof(vertex_t), vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, NUM_VERTICES * sizeof(GLushort), indices, GL_STATIC_DRAW);
 
-        OP::LoadDefaultShaderProgs();
-        GLuint basic_min_hndl = OP::GetShaderProgHandle("basic_min");
+        LoadDefaultShaderProgs();
+        GLuint basic_min_hndl = GetShaderProgHandle("basic_min");
         glUseProgram(basic_min_hndl);
 
         size_t offset = 0;
@@ -113,31 +112,17 @@ int main(int argc, char* argv[]) {
 
         while (!glfwWindowShouldClose(window)) {
             // Clear the screen to black
-            //glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            glBindBuffer(GL_ARRAY_BUFFER, vbos[VERTEXATTR_BUFFER_IDX]);
-            glBufferData(GL_ARRAY_BUFFER, NUM_VERTICES * (VERT_POS_SIZE + VERT_COLOR_SIZE) * sizeof(vertex_t), vertices, GL_STATIC_DRAW);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbos[INDEX_BUFFER_IDX]);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, NUM_VERTICES * sizeof(GLushort), indices, GL_STATIC_DRAW);
-
-            glEnableVertexAttribArray(posAttrib);
-            glEnableVertexAttribArray(colAttrib);
-            offset = 0;
-            glVertexAttribPointer(posAttrib, VERT_POS_SIZE, GL_FLOAT, GL_FALSE, VERTEX_STRIDE, (void*)offset);
-            offset += VERT_POS_SIZE * sizeof(vertex_t);
-            glVertexAttribPointer(colAttrib, VERT_COLOR_SIZE, GL_FLOAT, GL_FALSE, VERTEX_STRIDE, (void*)offset);
+            glBindVertexArray(vao);
 
             glm::mat4 model(1.0f);
             cam.RotateRoll(0.05f);
             glm::mat4 mvp = cam.Projection() * cam.View() * model;
             glUniformMatrix4fv(mvpUniformLoc, 1, GL_FALSE, &mvp[0][0]);
 
-            // Draw a triangle from the 3 vertices
             glDrawElements(GL_TRIANGLES, NUM_VERTICES, GL_UNSIGNED_SHORT, nullptr);
-
-            glDisableVertexAttribArray(posAttrib);
-            glDisableVertexAttribArray(colAttrib);
 
             glfwPollEvents();
 

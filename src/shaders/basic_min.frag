@@ -1,8 +1,10 @@
-#version 100
+#version 400
 precision highp float;
 varying vec4 col;
 
+out vec4 color;
+
 void main()
 {
-  gl_FragColor = vec4(col.rgb, 1.0);
+  color = vec4(col.rgb, 1.0);
 }

@@ -7,6 +7,8 @@
 
 #include "Constants.h"
 
+namespace bsgl {
+
 class Camera {
 public:
     Camera()
@@ -62,3 +64,5 @@ private:
     glm::vec3 up;
     glm::vec3 right;
 };
+
+}

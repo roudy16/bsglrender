@@ -1,6 +1,6 @@
-#version 100
-attribute vec3 position;
-attribute vec4 color;
+#version 400
+in vec3 position;
+in vec4 color;
 
 uniform mat4 mvp;
 

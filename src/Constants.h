@@ -2,6 +2,8 @@
 
 #include <GL/glew.h>
 
+namespace bsgl {
+
 using vertex_t = GLfloat;
 
 constexpr size_t NUM_VBOS = 2;
@@ -18,3 +20,5 @@ constexpr uint32_t WINDOW_HEIGHT = 640;
 constexpr GLfloat NEAR_CLIP = 0.1f;
 constexpr GLfloat FAR_CLIP = 100.0f;
 constexpr GLfloat DEFAULT_FOV = 60.0f;
+
+}
