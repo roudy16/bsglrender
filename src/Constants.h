@@ -21,4 +21,7 @@ constexpr GLfloat NEAR_CLIP = 0.1f;
 constexpr GLfloat FAR_CLIP = 100.0f;
 constexpr GLfloat DEFAULT_FOV = 60.0f;
 
+enum class ShaderType : uint16_t {
+    vertex, fragment, geometry
+};
 }

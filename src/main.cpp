@@ -10,6 +10,9 @@
 #include "Camera.h"
 #include "Constants.h"
 #include "utils.h"
+#include "Material.h"
+#include "MeshRenderer.h"
+#include "Program.h"
 
 using namespace std;
 using namespace bsgl;
@@ -34,8 +37,7 @@ GLFWwindow* createWindow(uint32_t width, uint32_t height) {
     return window;
 }
 
-void error_callback(int error, const char* description)
-{
+void error_callback(int error, const char* description) {
     fprintf(stderr, "Error: %s\n", description);
 }
 
@@ -73,40 +75,19 @@ int main(int argc, char* argv[]) {
             throw runtime_error("Failed to init GLEW");
         }
 
-        glClearColor(0, 0, 0, 1);
-        glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
         glClear(GL_COLOR_BUFFER_BIT);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        // Create Vertex Array Object
-        GLuint vao;
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
+        loadDefaultShaderProgs();
+
         GLuint vbos[NUM_VBOS];
         initVertexBufferObjects(vbos);
 
-        static vertex_t vertices[TRI_VALS] = {
-                 0.0f,  0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-                -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-                 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f };
-        static GLushort indices[NUM_VERTICES] = { 0, 1, 2 };
-        glBufferData(GL_ARRAY_BUFFER, NUM_VERTICES * (VERT_POS_SIZE + VERT_COLOR_SIZE) * sizeof(vertex_t), vertices, GL_STATIC_DRAW);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, NUM_VERTICES * sizeof(GLushort), indices, GL_STATIC_DRAW);
-
-        LoadDefaultShaderProgs();
-        GLuint basic_min_hndl = GetShaderProgHandle("basic_min");
-        glUseProgram(basic_min_hndl);
-
-        size_t offset = 0;
-        GLint posAttrib = glGetAttribLocation(basic_min_hndl, "position");
-        glEnableVertexAttribArray(posAttrib);
-        glVertexAttribPointer(posAttrib, VERT_POS_SIZE, GL_FLOAT, GL_FALSE, VERTEX_STRIDE, (void*)offset);
-        offset += VERT_POS_SIZE * sizeof(vertex_t);
-        GLint colAttrib = glGetAttribLocation(basic_min_hndl, "color");
-        glEnableVertexAttribArray(colAttrib);
-        glVertexAttribPointer(colAttrib, VERT_COLOR_SIZE, GL_FLOAT, GL_FALSE, VERTEX_STRIDE, (void*)offset);
-        GLint mvpUniformLoc = glGetUniformLocation(basic_min_hndl, "mvp");
+        Material basic_mat(getShaderProgram("basic_min"));
+        MeshRenderer tri;
+        tri.setMaterial(&basic_mat);
+        tri.prepare(vbos);
 
         Camera cam;
 
@@ -115,14 +96,9 @@ int main(int argc, char* argv[]) {
             glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            glBindVertexArray(vao);
-
-            glm::mat4 model(1.0f);
             cam.RotateRoll(0.05f);
-            glm::mat4 mvp = cam.Projection() * cam.View() * model;
-            glUniformMatrix4fv(mvpUniformLoc, 1, GL_FALSE, &mvp[0][0]);
-
-            glDrawElements(GL_TRIANGLES, NUM_VERTICES, GL_UNSIGNED_SHORT, nullptr);
+            glm::mat4 vp = cam.Projection() * cam.View();
+            tri.draw(vp);
 
             glfwPollEvents();
 

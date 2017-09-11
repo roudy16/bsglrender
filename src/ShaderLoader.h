@@ -5,10 +5,15 @@
 
 namespace bsgl {
 
-GLuint LoadVertexShader(const std::string& filepath);
-GLuint LoadFragmentShader(const std::string& filepath);
-GLuint GetShaderProgHandle(const std::string& name);
-void LoadDefaultShaderProgs();
+class Program;
+
+GLuint loadVertexShader(const std::string& filepath);
+GLuint loadFragmentShader(const std::string& filepath);
+GLuint loadGeometryShader(const std::string& filepath);
+Program* getShaderProgram(const std::string& name);
+void loadDefaultShaderProgs();
+bool checkCompileSuccess(GLuint hndl);
+bool checkLinkSuccess(GLuint hndl);
 
 }
 
