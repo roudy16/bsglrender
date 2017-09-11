@@ -28,17 +28,17 @@ void MeshRenderer::prepare(GLuint* vbos) {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, NUM_VERTICES * sizeof(GLushort), indices, GL_STATIC_DRAW);
 
     size_t offset = 0;
-    GLint posAttrib = mat->getProgram()->getAttribute("position");
-    glEnableVertexAttribArray(posAttrib);
-    glVertexAttribPointer(posAttrib, VERT_POS_SIZE, GL_FLOAT, GL_FALSE, VERTEX_STRIDE, (void*)offset);
+    GLint pos_attr = mat->getProgram()->getAttribute("position");
+    glEnableVertexAttribArray(pos_attr);
+    glVertexAttribPointer(pos_attr, VERT_POS_SIZE, GL_FLOAT, GL_FALSE, VERTEX_STRIDE, (void*)offset);
     offset += VERT_POS_SIZE * sizeof(vertex_t);
-    GLint colAttrib = mat->getProgram()->getAttribute("color");
-    glEnableVertexAttribArray(colAttrib);
-    glVertexAttribPointer(colAttrib, VERT_COLOR_SIZE, GL_FLOAT, GL_FALSE, VERTEX_STRIDE, (void*)offset);
-
+    GLint col_attr = mat->getProgram()->getAttribute("color");
+    glEnableVertexAttribArray(col_attr);
+    glVertexAttribPointer(col_attr, VERT_COLOR_SIZE, GL_FLOAT, GL_FALSE, VERTEX_STRIDE, (void*)offset);
 }
 
 void MeshRenderer::draw(glm::mat4 view_proj) {
+    glBindVertexArray(vao);
     mat->getProgram()->use();
 
     glm::mat4 model(1.0f);
